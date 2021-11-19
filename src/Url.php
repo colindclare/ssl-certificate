@@ -2,6 +2,7 @@
 
 namespace LiquidWeb\SslCertificate;
 
+use League\Uri\UriString;
 use League\Uri\Parser as UriParser;
 use LiquidWeb\SslCertificate\Exceptions\InvalidUrl;
 
@@ -37,13 +38,12 @@ final class Url
     public function __construct(string $url)
     {
         $this->inputUrl = $url;
-        $parser = new UriParser();
-        $this->parsedUrl = $parser($this->inputUrl);
+        $this->parsedUrl = UriString::parse($this->inputUrl);
 
         // Verify parsing has a host
         if (is_null($this->parsedUrl['host'])) {
             try {
-                $this->parsedUrl = $parser('https://'.$this->inputUrl);
+                $this->parsedUrl = UriString::parse('https://'.$this->inputUrl);
             } catch (\Exception $e) {
                 throw InvalidUrl::couldNotValidate($url);
             }
